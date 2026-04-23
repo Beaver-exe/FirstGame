@@ -9,7 +9,7 @@ Camera::Camera(float width, float height, glm::vec3 position) {
     ScreenWidth = width;
     ScreenHeight = height;
     Position = position;
-    Speed = 20.5f;
+    Speed = 100.0f;
     Projection = glm::ortho(-width / 2.0f, width/2.0f, -height/2.0f, height/2.0f, -1.0f, 1.0f);
 };
 
