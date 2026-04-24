@@ -1,0 +1,3 @@
+awesomeface assets/textures/awesomeface.png
+container assets/textures/container.jpg
+wall assets/textures/wall.jpg
