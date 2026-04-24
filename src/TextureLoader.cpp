@@ -22,8 +22,7 @@ unsigned int loadTexture(const std::string& textPath) {
 
     unsigned char *data = stbi_load(textPath.c_str(), &width, &height, &nrChannels, 0);
 
-    if (data)
-    {
+    if (data) {
         GLenum format;
 
         if (nrChannels == 1)
@@ -36,8 +35,7 @@ unsigned int loadTexture(const std::string& textPath) {
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
-    else
-    {
+    else {
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);

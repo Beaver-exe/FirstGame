@@ -9,7 +9,7 @@
 
 #include "Shader.h"
 #include "Camera.h"
-#include "TextureLoader.h"
+#include "ResourceManager.h"
 #include "stb_image.h"
 
 const unsigned int SCR_WIDTH = 1920;
@@ -49,7 +49,9 @@ int main(void)
 
 
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 0.0f));
-    Shader ourShader("shaders/shader.vert", "shaders/shader.frag"); 
+    Shader ourShader("shaders/shader.vert", "shaders/shader.frag");
+    ResourceManager resourceManager;
+    resourceManager.registerResources("assets/registry.txt");
 
     float vertices[] = {
         // position (pixels)   // tex coords
@@ -82,7 +84,7 @@ int main(void)
     glEnableVertexAttribArray(0);
 
 
-    unsigned int container = loadTexture("assets/wall.jpg");
+    unsigned int container = resourceManager.getTexture("awesomeface");
     ourShader.use();
     ourShader.setInt("image", 0);
 
