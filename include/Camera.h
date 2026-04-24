@@ -14,20 +14,16 @@ enum Camera_Movement {
 
 class Camera {    
 public:
-    
-    float Speed;
-
     Camera(float width, float height, glm::vec3 position);
     glm::mat4 GetViewMatrix();
     glm::mat4 GetProjectionMatrix();
     void ProcessKeyboard(Camera_Movement direction, float deltaTime);
-
+    float Speed;
 
 private: 
     glm::vec3 Position;
     float ScreenWidth;
     float ScreenHeight;
-
     glm::mat4 Projection;
 
 };
