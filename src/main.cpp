@@ -10,6 +10,10 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "ResourceManager.h"
+#include "TileDefinition.h"
+#include "TileMap.h"
+#include "Renderer.h"
+
 #include "stb_image.h"
 
 const unsigned int SCR_WIDTH = 1920;
@@ -49,45 +53,24 @@ int main(void)
 
 
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 0.0f));
+
     Shader ourShader("shaders/shader.vert", "shaders/shader.frag");
+
     ResourceManager resourceManager;
     resourceManager.registerResources("assets/registry.txt");
 
-    float vertices[] = {
-        // position (pixels)   // tex coords
-        0.0f,   0.0f,          0.0f, 0.0f,
-        64.0f,  0.0f,          1.0f, 0.0f,
-        64.0f,  64.0f,         1.0f, 1.0f,
-        0.0f,   64.0f,         0.0f, 1.0f
-    };
-
-    int indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    unsigned int VAO, VBO, EBO;
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    TileDefinition wall = TileDefinition(1, "path", "wall", true, true, true);
+    TileDefinition container = TileDefinition(2, "wood", "container", true, true, true);
 
 
-    unsigned int container = resourceManager.getTexture("awesomeface");
-    ourShader.use();
-    ourShader.setInt("image", 0);
+    TileRegistry tileRegistry;
+    tileRegistry.storeDefinition(1, wall);
+    tileRegistry.storeDefinition(2, container);
 
+    TileMap map = TileMap(25, 25);
+    map.generateMap();
+
+    Renderer renderer(ourShader, tileRegistry, resourceManager);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -99,21 +82,7 @@ int main(void)
         processInput(window, camera);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        ourShader.use();
-
-        ourShader.setVec3("spriteColor", 1.0f, 1.0f, 1.0f);
-        glm::mat4 model = glm::mat4(1.0f);
-        ourShader.setMat4("model", model);
-        glm::mat4 view = camera.GetViewMatrix();
-        ourShader.setMat4("view", view);
-        glm::mat4 projection = camera.GetProjectionMatrix();
-        ourShader.setMat4("projection", projection);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, container);
-
-        glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        renderer.renderTileMap(map, camera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
