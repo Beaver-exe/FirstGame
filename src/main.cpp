@@ -24,6 +24,8 @@ void processInput(GLFWwindow *window, Camera& camera);
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+float fpsTimer = 0.0f;
+int frameCount = 0;
 
 int main(void)
 {
@@ -67,7 +69,7 @@ int main(void)
     tileRegistry.storeDefinition(1, wall);
     tileRegistry.storeDefinition(2, container);
 
-    TileMap map = TileMap(25, 25);
+    TileMap map = TileMap(150, 150);
     map.generateMap();
 
     Renderer renderer(ourShader, tileRegistry, resourceManager);
@@ -76,8 +78,18 @@ int main(void)
     {
 
         float currentFrame = static_cast<float>(glfwGetTime());
+
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        frameCount++;
+        if (deltaTime >= 1.0 / 30.0)
+        {
+            std::string FPS = std::to_string((1.0 / deltaTime) * frameCount);
+            std::string newTitle = "FPS- " + FPS;
+            glfwSetWindowTitle(window, newTitle.c_str());
+            lastFrame = currentFrame;
+            frameCount = 0;
+        }
 
         processInput(window, camera);
         glClear(GL_COLOR_BUFFER_BIT);

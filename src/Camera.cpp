@@ -10,7 +10,11 @@ Camera::Camera(float width, float height, glm::vec3 position) {
     ScreenHeight = height;
     Position = position;
     Speed = 100.0f;
-    Projection = glm::ortho(-width / 2.0f, width/2.0f, -height/2.0f, height/2.0f, -1.0f, 1.0f);
+    Projection = glm::ortho(
+        0.0f, width,
+        0.0f, height,
+        -1.0f, 1.0f
+    );
 };
 
 glm::mat4 Camera::GetViewMatrix() {
@@ -18,7 +22,11 @@ glm::mat4 Camera::GetViewMatrix() {
 };
 
 glm::mat4 Camera::GetProjectionMatrix() {
-    return glm::ortho(-ScreenWidth / 2.0f, ScreenWidth/2.0f, -ScreenHeight/2.0f, ScreenHeight/2.0f, -1.0f, 1.0f);
+    return glm::ortho(
+        0.0f, ScreenWidth,
+        0.0f, ScreenHeight,
+        -1.0f, 1.0f
+    );
 };
 
 void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
