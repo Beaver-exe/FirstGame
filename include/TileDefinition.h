@@ -7,6 +7,8 @@
 class TileDefinition{
 
 public:
+    TileDefinition() = default;
+
     TileDefinition(
         int id,
         const std::string& tileName,
@@ -23,6 +25,11 @@ public:
         solid(isSolid)
     {
     }
+
+    std::string getTextureName() const {
+        return textureName;
+    }
+
 
 private:
     int tileId = -1;
