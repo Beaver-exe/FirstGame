@@ -3,16 +3,17 @@
 
 #include <iostream>
 
-void TileRegistry::storeDefinition(const std::string& tileName, const TileDefinition& tileDefinition) {
-    tileDefinitions[tileName] = tileDefinition;
+void TileRegistry::storeDefinition(int tileId, const TileDefinition& tileDefinition) {
+    tileDefinitions[tileId] = tileDefinition;
 }
 
-const TileDefinition* TileRegistry::getTileDefinition(const std::string& tileName) {
-    auto definition = tileDefinitions.find(tileName);
+const TileDefinition* TileRegistry::getTileDefinition(const int tileId) {
+    
+    auto definition = tileDefinitions.find(tileId);
     if (definition != tileDefinitions.end()) {
         return &definition->second;
     }
 
-    std::cout << "ERROR: Tile Definition not found in registry: " << tileName << std::endl;
+    std::cout << "ERROR: Tile Definition not found in registry: " << tileId << std::endl;
     return nullptr;
 }

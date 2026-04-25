@@ -8,11 +8,11 @@
 class TileRegistry {
 
 public:
-    const TileDefinition* getTileDefinition(const std::string& tileName);
+    const TileDefinition* getTileDefinition(int tileId);
 
 private:
-    std::map<std::string, TileDefinition> tileDefinitions;
-    void storeDefinition(const std::string& tileName, const TileDefinition& tileDefinition);
+    std::map<int, TileDefinition> tileDefinitions;
+    void storeDefinition(int tileId, const TileDefinition& tileDefinition);
 
 };
 
