@@ -97,36 +97,24 @@ int main(void)
         lastFrame = currentFrame;
 
         processInput(window, camera);
-
-        // 1. clear screen
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // 2. activate shader
         ourShader.use();
 
-        // 3. set sprite color (THIS is what you're missing)
         ourShader.setVec3("spriteColor", 1.0f, 1.0f, 1.0f);
-
         glm::mat4 model = glm::mat4(1.0f);
         ourShader.setMat4("model", model);
-
         glm::mat4 view = camera.GetViewMatrix();
         ourShader.setMat4("view", view);
-
         glm::mat4 projection = camera.GetProjectionMatrix();
         ourShader.setMat4("projection", projection);
 
-        // 4. bind texture to unit 0
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, container);
 
-        // 5. bind geometry
         glBindVertexArray(VAO);
-
-        // 6. draw
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-        // 7. swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
