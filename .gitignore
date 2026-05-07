@@ -1,4 +1,4 @@
 .vscode
 build
-include/glm
+include/external/glm
 cmake.stuff

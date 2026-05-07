@@ -1,8 +1,8 @@
-#include "Camera.h"
+#include "core/Camera.h"
 #include <iostream>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <external/glm/glm.hpp>
+#include <external/glm/gtc/matrix_transform.hpp>
 
 Camera::Camera(float width, float height, glm::vec3 position) {
 

@@ -11,7 +11,9 @@ include_directories(
 )
 
 # Automatically grab all .cpp files
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES
+    "${CMAKE_SOURCE_DIR}/src/*.cpp"
+)
 
 # Add executable
 add_executable(main

@@ -1,5 +1,5 @@
-#include "Renderer.h"
-#include "TileMap.h"
+#include "core/Renderer.h"
+#include "tiles/TileMap.h"
 
 #include <glad/glad.h>
 

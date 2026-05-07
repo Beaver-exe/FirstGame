@@ -1,5 +1,5 @@
-#include "TileRegistry.h"
-#include "TileDefinition.h"
+#include "tiles/TileRegistry.h"
+#include "tiles/TileDefinition.h"
 
 #include <iostream>
 

@@ -1,5 +1,5 @@
-#include "ResourceManager.h"
-#include "TextureLoader.h"
+#include "resources/ResourceManager.h"
+#include "tiles/TileRegistry.h"
 
 #include <iostream>
 #include <string>

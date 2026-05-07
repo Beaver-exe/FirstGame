@@ -1,10 +1,10 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#include "TileMap.h"
+#include "tiles/TileMap.h"
 #include "Shader.h"
-#include "TileRegistry.h"
-#include "ResourceManager.h"
+#include "tiles/TileRegistry.h"
+#include "resources/ResourceManager.h"
 #include "Camera.h"
 
 class Renderer {

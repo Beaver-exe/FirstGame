@@ -3,18 +3,21 @@
 #include <iostream>
 #include <cmath>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <external/glm/glm.hpp>
+#include <external/glm/gtc/matrix_transform.hpp>
+#include <external/glm/gtc/type_ptr.hpp>
 
-#include "Shader.h"
-#include "Camera.h"
-#include "ResourceManager.h"
-#include "TileDefinition.h"
-#include "TileMap.h"
-#include "Renderer.h"
+#include "core/Shader.h"
+#include "core/Camera.h"
+#include "core/Renderer.h"
 
-#include "stb_image.h"
+#include "resources/ResourceManager.h"
+
+
+#include "tiles/TileDefinition.h"
+#include "tiles/TileMap.h"
+
+#include "external/stb_image.h"
 
 const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
