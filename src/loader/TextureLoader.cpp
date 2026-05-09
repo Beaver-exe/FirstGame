@@ -1,4 +1,4 @@
-#include "resources/TextureLoader.h"
+#include "loader/TextureLoader.h"
 #include "external/stb_image.h"
 
 #include <glad/glad.h>
