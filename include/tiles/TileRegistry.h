@@ -6,12 +6,9 @@
 #include "TileDefinition.h"
 
 class TileRegistry {
-
 public:
     const TileDefinition* getTileDefinition(int tileId);
     void storeDefinition(int tileId, const TileDefinition& tileDefinition);
-
-
 
 private:
     std::map<int, TileDefinition> tileDefinitions;

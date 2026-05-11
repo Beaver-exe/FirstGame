@@ -1,13 +1,12 @@
 #ifndef RESOURCEMANAGER_H
 #define RESOURCEMANAGER_H
-#include "TextureLoader.h"
 
+#include "loader/TextureLoader.h"
 
 #include <map>
 #include <string>
 
-class ResourceManager 
-{
+class ResourceManager {
 public:
     void registerResources(const std::string& pathName);    
     unsigned int getTexture(const std::string& textureName);
