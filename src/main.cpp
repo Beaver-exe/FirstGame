@@ -13,9 +13,10 @@
 
 #include "resources/ResourceManager.h"
 
-
 #include "tiles/TileDefinition.h"
 #include "tiles/TileMap.h"
+
+#include "loader/MapLoader.h"
 
 #include "external/stb_image.h"
 
@@ -56,26 +57,14 @@ int main(void)
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
     glClearColor(0.2f, 0.5f, 0.7f, 1.0f);
 
-
     Camera camera(SCR_WIDTH, SCR_HEIGHT, glm::vec3(0.0f, 0.0f, 0.0f));
-
     Shader ourShader("shaders/shader.vert", "shaders/shader.frag");
 
     ResourceManager resourceManager;
     resourceManager.registerResources("assets/registry.txt");
 
-    TileDefinition wall = TileDefinition(1, "path", "wall", true, true, true);
-    TileDefinition container = TileDefinition(2, "wood", "container", true, true, true);
-
-
-    TileRegistry tileRegistry;
-    tileRegistry.storeDefinition(1, wall);
-    tileRegistry.storeDefinition(2, container);
-
-    TileMap map = TileMap(150, 150);
-    map.generateMap();
-
-    Renderer renderer(ourShader, tileRegistry, resourceManager);
+    auto map = MapLoader::load("assets/maps/FirstMap.tmj");
+    Renderer renderer(ourShader, resourceManager);
 
     while (!glfwWindowShouldClose(window))
     {
@@ -97,7 +86,7 @@ int main(void)
         processInput(window, camera);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        renderer.renderTileMap(map, camera);
+        renderer.renderTileMap(*map, camera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
