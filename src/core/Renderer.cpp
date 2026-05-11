@@ -1,19 +1,27 @@
 #include "core/Renderer.h"
-#include "tiles/TileMap.h"
 
 #include <glad/glad.h>
 
-Renderer::Renderer(Shader& shader, TileRegistry& tileRegistry, ResourceManager& resourceManager) :
- shader(shader), tileRegistry(tileRegistry), resourceManager(resourceManager) {
+#include <external/glm/gtc/matrix_transform.hpp>
 
+Renderer::Renderer(Shader& shader, ResourceManager& resourceManager)
+    : shader(shader),
+      resourceManager(resourceManager)
+{
+    initQuad();
+}
+
+void Renderer::initQuad()
+{
     float vertices[] = {
-        0.0f, 0.0f,   0.0f, 0.0f,
-        1.0f, 0.0f,   1.0f, 0.0f,
-        1.0f, 1.0f,   1.0f, 1.0f,
-        0.0f, 1.0f,   0.0f, 1.0f
+        // pos         // uv
+        0.0f, 0.0f,    0.0f, 0.0f,
+        1.0f, 0.0f,    1.0f, 0.0f,
+        1.0f, 1.0f,    1.0f, 1.0f,
+        0.0f, 1.0f,    0.0f, 1.0f
     };
 
-    int indices[] = {
+    unsigned int indices[] = {
         0, 1, 2,
         2, 3, 0
     };
@@ -36,57 +44,95 @@ Renderer::Renderer(Shader& shader, TileRegistry& tileRegistry, ResourceManager& 
     glBindVertexArray(0);
 }
 
+void Renderer::drawTile(
+    int worldX,
+    int worldY,
+    int tileWidth,
+    int tileHeight,
+    unsigned int textureID,
+    float u0,
+    float v0,
+    float u1,
+    float v1
+)
+{
+    float vertices[] = {
+        // pos         // uv
+        0.0f, 0.0f,    u0, v0,
+        1.0f, 0.0f,    u1, v0,
+        1.0f, 1.0f,    u1, v1,
+        0.0f, 1.0f,    u0, v1
+    };
 
-void Renderer::drawTile(int worldX, int worldY, unsigned int textureId) {
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(worldX, worldY, 0.0f));
-    model = glm::scale(model, glm::vec3(tileSize, tileSize, 1.0f));
+    glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices);
 
-    shader.setMat4("model", model);
+    shader.setMat4("model",
+        glm::translate(glm::mat4(1.0f),
+        glm::vec3(worldX, worldY, 0.0f)) *
+        glm::scale(glm::mat4(1.0f),
+        glm::vec3(tileWidth, tileHeight, 1.0f))
+    );
 
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureId);
+    glBindTexture(GL_TEXTURE_2D, textureID);
 
     glBindVertexArray(quadVAO);
-
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
 }
 
+void Renderer::renderTileMap(const TileMap& map, Camera camera)
+{
+    shader.use();
 
-void Renderer::renderTileMap(const TileMap& map, Camera camera) {
-    
+    shader.setMat4("view", camera.GetViewMatrix());
+    shader.setMat4("projection", camera.GetProjectionMatrix());
+    shader.setVec3("spriteColor", 1.0f, 1.0f, 1.0f);
+
     int mapWidth = map.getWidth();
     int mapHeight = map.getHeight();
 
-    shader.use();
-    glm::mat4 view = camera.GetViewMatrix();
-    glm::mat4 projection = camera.GetProjectionMatrix();
+    int tileWidth = map.getTileWidth();
+    int tileHeight = map.getTileHeight();
 
-    shader.setMat4("view", view);
-    shader.setMat4("projection", projection);
-    shader.setVec3("spriteColor", 1.0f, 1.0f, 1.0f);
+    for (int y = 0; y < mapHeight; y++)
+    {
+        for (int x = 0; x < mapWidth; x++)
+        {
+            uint32_t gid = map.getTile(x, y);
 
-    for (int x = 0; x < mapWidth; x++) {
-        for (int y = 0; y < mapHeight; y++) {
-
-            int worldX = x * tileSize;
-            int worldY = y * tileSize;
-
-            int tileId = map.getTile(x, y);
-
-            const TileDefinition* tileDef = tileRegistry.getTileDefinition(tileId);
-            if (!tileDef)
+            if (gid == 0)
                 continue;
 
-            std::string texName = tileDef->getTextureName();
-            unsigned int texId =  resourceManager.getTexture(texName);
+            auto tileset = map.getTileSetForGid(gid);
+            if (!tileset)
+                continue;
 
-            drawTile(worldX, worldY, texId);
+            uint32_t localID = gid - tileset->firstGid;
 
+            uint32_t tileX = localID % tileset->columns;
+            uint32_t tileY = localID / tileset->columns;
+
+            float px = tileX * tileset->tileWidth;
+            float py = tileY * tileset->tileHeight;
+
+            float u0 = px / tileset->imageWidth;
+            float v0 = py / tileset->imageHeight;
+            float u1 = (px + tileset->tileWidth) / tileset->imageWidth;
+            float v1 = (py + tileset->tileHeight) / tileset->imageHeight;
+
+            int worldX = x * tileWidth;
+            int worldY = y * tileHeight;
+
+        
+            drawTile(
+                worldX,
+                worldY,
+                tileWidth,
+                tileHeight,
+                tileset->textureID,
+                u0, v0, u1, v1
+            );
         }
     }
 }
-
-
-
