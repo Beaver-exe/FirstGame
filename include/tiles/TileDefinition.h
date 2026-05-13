@@ -3,9 +3,7 @@
 
 #include <string>
 
-
-class TileDefinition{
-
+class TileDefinition {
 public:
     TileDefinition() = default;
 

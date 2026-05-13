@@ -2,6 +2,7 @@
 #define TILEMAP_H
 
 #include "tiles/TileSet.h"
+#include "tiles/TileLayer.h"
 
 #include <vector>
 #include <cstdint>
@@ -16,11 +17,11 @@ public:
         int tileHeight
     );
 
-    uint32_t getTile(int x, int y) const;
-    void setTile(int x, int y, uint32_t tileGID);
+    void addLayer(const TileLayer& layer);
 
-    void setTiles(const std::vector<uint32_t>& newTiles);
-    const std::vector<uint32_t>& getTiles() const;
+    const std::vector<TileLayer>& getLayers() const;
+
+    const TileLayer* getLayer(const std::string& name) const;
 
     void addTileSet(std::shared_ptr<TileSet> tileset);
     const std::vector<std::shared_ptr<TileSet>>& getTileSets() const;
@@ -40,7 +41,7 @@ private:
     int tileWidth;
     int tileHeight;
 
-    std::vector<uint32_t> tileGIDs;
+    std::vector<TileLayer> layers;
     std::vector<std::shared_ptr<TileSet>> tilesets;
 };
 

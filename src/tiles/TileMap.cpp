@@ -8,25 +8,24 @@ TileMap::TileMap(int mapWidth, int mapHeight, int tileWidth, int tileHeight)
       tileWidth(tileWidth),
       tileHeight(tileHeight)
 {
-    tileGIDs.reserve(mapWidth * mapHeight);
 }
 
-uint32_t TileMap::getTile(int x, int y) const {
-    int index = y * mapWidth + x;
-    return tileGIDs[index];
+void TileMap::addLayer(const TileLayer& layer) {
+    layers.push_back(layer);
 }
 
-void TileMap::setTile(int x, int y, uint32_t tileGID) {
-    int index = y * mapWidth + x;
-    tileGIDs[index] = tileGID;
+const std::vector<TileLayer>& TileMap::getLayers() const {
+    return layers;
 }
 
-void TileMap::setTiles(const std::vector<uint32_t>& newTiles) {
-    tileGIDs = newTiles;
-}
+const TileLayer* TileMap::getLayer(const std::string& name) const {
+    for (const auto& layer : layers) {
+        if (layer.name == name) {
+            return &layer;
+        }
+    }
 
-const std::vector<uint32_t>& TileMap::getTiles() const {
-    return tileGIDs;
+    return nullptr;
 }
 
 void TileMap::addTileSet(std::shared_ptr<TileSet> tileset) {

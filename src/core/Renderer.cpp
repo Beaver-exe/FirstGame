@@ -8,6 +8,8 @@ Renderer::Renderer(Shader& shader, ResourceManager& resourceManager)
     : shader(shader),
       resourceManager(resourceManager)
 {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     initQuad();
 }
 
@@ -89,50 +91,54 @@ void Renderer::renderTileMap(const TileMap& map, Camera camera)
     shader.setMat4("projection", camera.GetProjectionMatrix());
     shader.setVec3("spriteColor", 1.0f, 1.0f, 1.0f);
 
-    int mapWidth = map.getWidth();
-    int mapHeight = map.getHeight();
-
     int tileWidth = map.getTileWidth();
     int tileHeight = map.getTileHeight();
 
-    for (int y = 0; y < mapHeight; y++)
-    {
-        for (int x = 0; x < mapWidth; x++)
-        {
-            uint32_t gid = map.getTile(x, y);
+    for (const auto& layer : map.getLayers()) {
+        if (!layer.visible) {
+            continue;
+        }
 
-            if (gid == 0)
-                continue;
+        for (int y = 0; y < layer.height; y++) {
+            for (int x = 0; x < layer.width; x++) {
+                uint32_t gid = layer.getTile(x, y);
 
-            auto tileset = map.getTileSetForGid(gid);
-            if (!tileset)
-                continue;
+                if (gid == 0) {
+                    continue;
+                }
 
-            uint32_t localID = gid - tileset->firstGid;
+                auto tileset = map.getTileSetForGid(gid);
 
-            uint32_t tileX = localID % tileset->columns;
-            uint32_t tileY = localID / tileset->columns;
+                if (!tileset) {
+                    continue;
+                }
 
-            float px = tileX * tileset->tileWidth;
-            float py = tileY * tileset->tileHeight;
+                uint32_t localID = gid - tileset->firstGid;
 
-            float u0 = px / tileset->imageWidth;
-            float v0 = py / tileset->imageHeight;
-            float u1 = (px + tileset->tileWidth) / tileset->imageWidth;
-            float v1 = (py + tileset->tileHeight) / tileset->imageHeight;
+                uint32_t tileX = localID % tileset->columns;
+                uint32_t tileY = localID / tileset->columns;
 
-            int worldX = x * tileWidth;
-            int worldY = y * tileHeight;
+                float px = tileX * tileset->tileWidth;
+                float py = tileY * tileset->tileHeight;
 
-        
-            drawTile(
-                worldX,
-                worldY,
-                tileWidth,
-                tileHeight,
-                tileset->textureID,
-                u0, v0, u1, v1
-            );
+                float u0 = px / tileset->imageWidth;
+                float v0 = py / tileset->imageHeight;
+
+                float u1 = (px + tileset->tileWidth) / tileset->imageWidth;
+                float v1 = (py + tileset->tileHeight) / tileset->imageHeight;
+
+                int worldX = x * tileWidth;
+                int worldY = y * tileHeight;
+
+                drawTile(
+                    worldX,
+                    worldY,
+                    tileWidth,
+                    tileHeight,
+                    tileset->textureID,
+                    u0, v0, u1, v1
+                );
+            }
         }
     }
 }
