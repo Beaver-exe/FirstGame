@@ -63,7 +63,7 @@ int main(void)
     ResourceManager resourceManager;
     resourceManager.registerResources("assets/registry.txt");
 
-    auto map = MapLoader::load("assets/maps/FirstMap.tmj");
+    TileMap map = MapLoader::load("assets/maps/TestMap.tmj");
     Renderer renderer(ourShader, resourceManager);
 
     while (!glfwWindowShouldClose(window))
@@ -86,7 +86,7 @@ int main(void)
         processInput(window, camera);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        renderer.renderTileMap(*map, camera);
+        renderer.renderTileMap(map, camera);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
