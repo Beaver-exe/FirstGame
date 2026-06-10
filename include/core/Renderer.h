@@ -2,10 +2,14 @@
 #define RENDERER_H
 
 #include "Shader.h"
+#include "Camera.h"
+
+#include "resources/ResourceManager.h"
+
 #include "tiles/TileMap.h"
 #include "tiles/TileSet.h"
-#include "resources/ResourceManager.h"
-#include "Camera.h"
+
+#include "entities/Player.h"
 
 #include <external/glm/glm.hpp>
 
@@ -13,6 +17,7 @@ class Renderer {
 public:
     Renderer(Shader& shader, ResourceManager& resourceManager);
     void renderTileMap(const TileMap& map, Camera camera);
+    void renderPlayer(const Player& player);
 
 private:
     void initQuad();

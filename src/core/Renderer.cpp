@@ -83,8 +83,7 @@ void Renderer::drawTile(
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
-void Renderer::renderTileMap(const TileMap& map, Camera camera)
-{
+void Renderer::renderTileMap(const TileMap& map, Camera camera) {
     shader.use();
 
     shader.setMat4("view", camera.GetViewMatrix());
@@ -141,4 +140,28 @@ void Renderer::renderTileMap(const TileMap& map, Camera camera)
             }
         }
     }
+}
+
+void Renderer::renderPlayer(const Player& player) {
+    glm::vec2 worldPos = player.getWorldPosition();
+
+    unsigned int playerTexture = resourceManager.getTexture("container");
+
+    float worldX = worldPos.x * 32.0f;
+    float worldY = worldPos.y * 32.0f;
+
+        shader.setMat4("model",
+        glm::translate(glm::mat4(1.0f),
+        glm::vec3(worldX, worldY, 0.0f)) *
+        glm::scale(glm::mat4(1.0f),
+        glm::vec3(32.0f, 32.0f, 1.0f))
+    );
+
+    shader.setVec3("spriteColor", 1.0f, 1.0f, 1.0f);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, playerTexture);
+
+    glBindVertexArray(quadVAO);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }

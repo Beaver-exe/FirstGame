@@ -7,6 +7,8 @@
 #include <external/glm/gtc/matrix_transform.hpp>
 #include <external/glm/gtc/type_ptr.hpp>
 
+#include "world/World.h"
+
 #include "core/Shader.h"
 #include "core/Camera.h"
 #include "core/Renderer.h"
@@ -24,15 +26,14 @@ const unsigned int SCR_WIDTH = 1920;
 const unsigned int SCR_HEIGHT = 1080;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window, Camera& camera);
+void processInput(GLFWwindow *window, InputState& input, Player& player);
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 float fpsTimer = 0.0f;
 int frameCount = 0;
 
-int main(void)
-{
+int main(void) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -63,30 +64,42 @@ int main(void)
     ResourceManager resourceManager;
     resourceManager.registerResources("assets/registry.txt");
 
-    TileMap map = MapLoader::load("assets/maps/TestMap.tmj");
+    glm::ivec2 startPos(18, 18);
+
+    World world("assets/maps/TestMap.tmj", startPos, true);
+    Player& player = world.getPlayer();
+
     Renderer renderer(ourShader, resourceManager);
 
-    while (!glfwWindowShouldClose(window))
-    {
+    while (!glfwWindowShouldClose(window)) {
 
         float currentFrame = static_cast<float>(glfwGetTime());
 
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
         frameCount++;
-        if (deltaTime >= 1.0 / 30.0)
-        {
-            std::string FPS = std::to_string((1.0 / deltaTime) * frameCount);
-            std::string newTitle = "FPS- " + FPS;
+
+        fpsTimer += deltaTime;
+
+        if (fpsTimer >= 1.0f) {
+            float fps = frameCount / fpsTimer;
+
+            std::string newTitle = "FPS - " + std::to_string(fps);
+
             glfwSetWindowTitle(window, newTitle.c_str());
-            lastFrame = currentFrame;
+
+            fpsTimer = 0.0f;
             frameCount = 0;
         }
 
-        processInput(window, camera);
-        glClear(GL_COLOR_BUFFER_BIT);
+        InputState input;
 
-        renderer.renderTileMap(map, camera);
+        processInput(window, input, player);
+        player.update(deltaTime);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
+        renderer.renderTileMap(world.getMap(), camera);
+        renderer.renderPlayer(player);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -100,17 +113,21 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window, Camera& camera)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+void processInput(GLFWwindow *window, InputState& input, Player& player) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    }
 
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(UP, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(DOWN, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        input.up = true;
+    } else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        input.down = true;
+    } else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        input.left = true;
+    } else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        input.right = true;
+    }
+
+    player.setInputState(input);
+
 }

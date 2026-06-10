@@ -11,9 +11,12 @@ Camera::Camera(float width, float height, glm::vec3 position) {
     Position = position;
     Speed = 100.0f;
     Projection = glm::ortho(
-        0.0f, width,
-        0.0f, height,
-        -1.0f, 1.0f
+        0.0f,
+        width,
+        height,
+        0.0f,
+        -1.0f,
+        1.0f
     );
 };
 
@@ -23,22 +26,11 @@ glm::mat4 Camera::GetViewMatrix() {
 
 glm::mat4 Camera::GetProjectionMatrix() {
     return glm::ortho(
-        0.0f, ScreenWidth,
-        0.0f, ScreenHeight,
-        -1.0f, 1.0f
+        0.0f,
+        ScreenWidth,
+        ScreenHeight,
+        0.0f,
+        -1.0f,
+        1.0f
     );
 };
-
-void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime) {
-
-    float velocity = Speed * deltaTime;
-
-    if (direction == LEFT)
-        Position.x -= velocity;
-    if (direction == RIGHT) 
-        Position.x += velocity;
-    if (direction == UP)
-        Position.y += velocity;
-    if (direction == DOWN)
-        Position.y -= velocity;
-}   
